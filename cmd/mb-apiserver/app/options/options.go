@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/pflag"
+	"github.com/wshadm/miniblog/internal/apiserver"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -49,4 +50,13 @@ func (o *ServerOptions) AddFlags(fs *pflag.FlagSet) {
 func (o *ServerOptions) Validate(obj any) error {
 	v := validator.New()
 	return v.Struct(obj)
+}
+
+//Config基于ServerOption构建apiserver.Config
+func (o *ServerOptions)  Config() (*apiserver.Config, error) {
+	return &apiserver.Config{
+		ServerMode: o.ServerMode,
+		JWTKey: o.JWTKey,
+		Expiration: o.Expiration,
+	}, nil
 }

@@ -24,15 +24,8 @@ func NewMiniBlogCommand() *cobra.Command {
 		SilenceUsage: true,
 		// 指定调用 cmd.Execute() 时，执行的 Run 函数
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := viper.Unmarshal(&ops); err != nil {
-				return  err
-			}
-			//对命令行选项值进行校验
-			if err := ops.Validate(ops); err != nil {
-				return  err
-			}
-			jsonData, _ := json.MarshalIndent(ops, "", " ")
-			fmt.Println(string(jsonData))
+			
+			
 			return nil
 		},
 		// 设置命令运行时的参数检查，不需要指定命令行参数。例如：./miniblog param1 param2
@@ -46,4 +39,25 @@ func NewMiniBlogCommand() *cobra.Command {
 	// 将 ServerOptions 中的选项绑定到命令标志
 	ops.AddFlags(cmd.PersistentFlags())
 	return cmd
+}
+
+func run(opts *options.ServerOptions) error {
+	if err := viper.Unmarshal(&opts); err != nil {
+		return  err
+	}
+	//对命令行选项值进行校验
+	if err := opts.Validate(&opts); err != nil {
+		return  err
+	}
+	cfg, err := opts.Config()
+	if err != nil {
+		return err
+	}
+	// 创建服务器实例.
+	// 注意这里是联合服务器，因为可能同时启动多个不同类型的服务器.
+	server, err := cfg.NewUnionServer()
+	if err != nil {
+		return err
+	}
+	return server.Run()
 }
