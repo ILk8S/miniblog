@@ -21,7 +21,6 @@ func L() *zerolog.Logger {
 }
 
 var (
-	// 保护全局Logger对象
 	logger *zerolog.Logger
 )
 
@@ -39,18 +38,6 @@ func initLogger() {
 	output.FormatFieldValue = func(i interface{}) string {
 		return strings.ToUpper(fmt.Sprintf("%s", i))
 	}
-
-	// zerolog.CallerMarshalFunc = func(pc uintptr, file string, line int) string {
-	// 	short := file
-	// 	for i := len(file) - 1; i > 0; i-- {
-	// 		if file[i] == '/' {
-	// 			short = file[i+1:]
-	// 			break
-	// 		}
-	// 	}
-	// 	file = short
-	// 	return file + ":" + strconv.Itoa(line)
-	// }
 
 	l := zerolog.New(output).With().Timestamp().Caller().Logger()
 	logger = &l
