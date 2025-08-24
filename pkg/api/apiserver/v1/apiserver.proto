@@ -1,0 +1,16 @@
+syntax = "proto3"; // 告诉编译器此文件使用什么版本的语法
+
+package v1;
+
+import "google/protobuf/empty.proto"; // 导入空消息
+import "apiserver/v1/healthz.proto";  // 健康检查消息定义
+
+//用于指定生成的.pb.go文件在那个位置;属于哪个包
+option go_package = "github.com/wshadm/miniblog/pkg/api/server/v1;v1";
+
+//MiniBlog 定义了一个MiniBlog RPC 服务
+
+service MiniBlog {
+    //Healthz 健康检查
+    rpc Healthz(google.protobuf.Empty) returns (HealthResponse) {}
+}
