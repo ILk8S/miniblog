@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/wshadm/miniblog/cmd/mb-apiserver/app/options"
+	"github.com/wshadm/miniblog/internal/pkg/logger"
 )
 
 var configFile string //配置文件路径
@@ -20,8 +21,8 @@ func NewMiniBlogCommand() *cobra.Command {
 		SilenceUsage: true,
 		// 指定调用 cmd.Execute() 时，执行的 Run 函数
 		RunE: func(cmd *cobra.Command, args []string) error {
-
-			return nil
+			logger.L().Info().Msg("starting call run(ops)")
+			return run(ops)
 		},
 		// 设置命令运行时的参数检查，不需要指定命令行参数。例如：./miniblog param1 param2
 		Args: cobra.NoArgs,
@@ -41,9 +42,9 @@ func run(opts *options.ServerOptions) error {
 		return err
 	}
 	//对命令行选项值进行校验
-	if err := opts.Validate(&opts); err != nil {
-		return err
-	}
+	// if err := opts.Validate(opts); err != nil {
+	// 	return err
+	// }
 	cfg, err := opts.Config()
 	if err != nil {
 		return err

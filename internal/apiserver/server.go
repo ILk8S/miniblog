@@ -4,12 +4,12 @@ import (
 	"net"
 	"time"
 
+	handler "github.com/wshadm/miniblog/internal/apiserver/handler/grpc"
 	"github.com/wshadm/miniblog/internal/pkg/logger"
-	v1 "github.com/wshadm/miniblog/pkg/api/apiserver/v1"
+	apiv1 "github.com/wshadm/miniblog/pkg/api/apiserver/v1"
 	"github.com/wshadm/miniblog/pkg/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	handler "github.com/wshadm/miniblog/internal/apiserver/handler/grpc"
 )
 
 const (
@@ -48,7 +48,7 @@ func (c *Config) NewUnionServer() (*UnionServer, error) {
 	}
 	//创建GRPC Server 实例
 	grpcsrv := grpc.NewServer()
-	v1.RegisterMiniBlogServer(grpcsrv, handler.NewHandler())
+	apiv1.RegisterMiniBlogServer(grpcsrv, handler.NewHandler())
 	reflection.Register(grpcsrv)
 	return &UnionServer{
 		cfg: c,
@@ -64,6 +64,6 @@ func (s *UnionServer) Run() error {
 	// jsonData, _ := json.MarshalIndent(s.cfg, "", " ")
 	// fmt.Println(string(jsonData))
 	// select {}
-	logger.L().Info().Msgf("Start to listening the incoming requests on grpc address", "addr", s.cfg.GRPCOptions.Addr)
+	logger.L().Info().Msgf("Start to listening the incoming requests on grpc address: %s", s.cfg.GRPCOptions.Addr)
 	return s.srv.Serve(s.lis)
 }

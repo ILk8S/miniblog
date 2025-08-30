@@ -3,10 +3,11 @@ package options
 import (
 	"fmt"
 	"time"
-	"github.com/wshadm/miniblog/pkg/options"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/pflag"
 	"github.com/wshadm/miniblog/internal/apiserver"
+	"github.com/wshadm/miniblog/pkg/options"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -22,7 +23,7 @@ type ServerOptions struct {
 	//ServerMode 定义服务器模式：gRPC、gin、HTTP、HTTP Reverse Proxy。
 	ServerMode string `json:"server-mode" mapstructure:"server-mode"`
 	//JWTKey 定义JWT秘钥
-	JWTKey string `json:"jwt-key" mapstructure:"jwt-key" validate:"required, min=6"`
+	JWTKey string `json:"jwt-key" mapstructure:"jwt-key"`
 	//Expiration定义JWT Token的过期时间
 	Expiration time.Duration `json:"expiration" mapstructure:"expiration"`
 	// GRPCOptions 包含 gRPC 配置选项.
@@ -32,9 +33,9 @@ type ServerOptions struct {
 // NewServerOptions 创建带有默认值的ServerOptions 实例
 func NewServerOptions() *ServerOptions {
 	opts := &ServerOptions{
-		ServerMode: apiserver.GRPCGatewayServerMode,
-		JWTKey: "Rtg8BPKNEf2mB4mgvKONGPZZQSaJWNLijxR42qRgq0iBb5",
-		Expiration: 2 * time.Hour,
+		ServerMode:  apiserver.GRPCGatewayServerMode,
+		JWTKey:      "Rtg8BPKNEf2mB4mgvKONGPZZQSaJWNLijxR42qRgq0iBb5",
+		Expiration:  2 * time.Hour,
 		GRPCOptions: options.NewGRPCOptions(),
 	}
 	opts.GRPCOptions.Addr = ":6666"
@@ -63,12 +64,12 @@ func (o *ServerOptions) Validate(obj any) error {
 	// }
 }
 
-//Config基于ServerOption构建apiserver.Config
-func (o *ServerOptions)  Config() (*apiserver.Config, error) {
+// Config基于ServerOption构建apiserver.Config
+func (o *ServerOptions) Config() (*apiserver.Config, error) {
 	return &apiserver.Config{
-		ServerMode: o.ServerMode,
-		JWTKey: o.JWTKey,
-		Expiration: o.Expiration,
+		ServerMode:  o.ServerMode,
+		JWTKey:      o.JWTKey,
+		Expiration:  o.Expiration,
 		GRPCOptions: o.GRPCOptions,
 	}, nil
 }
