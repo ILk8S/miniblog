@@ -6,11 +6,22 @@ import (
 	"net/http"
 
 	"github.com/wshadm/miniblog/internal/pkg/logger"
+	"github.com/wshadm/miniblog/pkg/options"
 )
 
 // HTTPServer 代表一个HTTP服务器
 type HTTPServer struct {
 	srv *http.Server
+}
+
+// NewHTTPServer 创建一个新的HTTP服务器实例
+func NewHTTPServer(httpOptions *options.HTTPOptions, handler http.Handler) *HTTPServer {
+	return &HTTPServer{
+		srv: &http.Server{
+			Addr:    httpOptions.Addr,
+			Handler: handler,
+		},
+	}
 }
 
 // RunOrDie 启动HTTP服务器
