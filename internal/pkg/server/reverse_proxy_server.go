@@ -20,34 +20,35 @@ type GRPCGatewayServer struct {
 	srv *http.Server
 }
 
-//NewGRPCGatewayServer 创建示例
+// NewGRPCGatewayServer 创建示例
 func NewGRPCGatewayServer(httpOptions *options.HTTPOptions, grpcOptions *options.GRPCOptions,
 	registerHandler func(mux *runtime.ServeMux, conn *grpc.ClientConn) error) (*GRPCGatewayServer, error) {
-		dialOptions := []grpc.DialOption{grpc.WithConnectParams(grpc.ConnectParams{
-			Backoff: backoff.DefaultConfig,
-			MinConnectTimeout: 10 * time.Second,
-		})}
-		dialOptions = append(dialOptions, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		conn, err := grpc.NewClient(grpcOptions.Addr, dialOptions...)
-		if err != nil {
-			logger.L().Error().Err(err).Msgf("Failed to dial context: %s", err)
-			return nil, err
-		}
-		gwmux := runtime.NewServeMux(runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
-			MarshalOptions: protojson.MarshalOptions{
-				UseEnumNumbers: true,
-			},
-		}))
-		if err  := registerHandler(gwmux, conn); err != nil {
-			logger.L().Error().Err(err).Msgf("Failed to register handler", "err", err)
-			return nil, err
-		}
-		return &GRPCGatewayServer{
-			srv: &http.Server{
-				Addr: httpOptions.Addr,
-				Handler: gwmux,
-			},
-		}, nil
+	dialOptions := []grpc.DialOption{grpc.WithConnectParams(grpc.ConnectParams{
+		Backoff:           backoff.DefaultConfig,
+		MinConnectTimeout: 10 * time.Second,
+	})}
+	dialOptions = append(dialOptions, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(grpcOptions.Addr, dialOptions...)
+	if err != nil {
+		logger.L().Error().Err(err).Msgf("Failed to dial context: %s", err)
+		return nil, err
+	}
+	defer conn.Close()
+	gwmux := runtime.NewServeMux(runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
+		MarshalOptions: protojson.MarshalOptions{
+			UseEnumNumbers: true,
+		},
+	}))
+	if err := registerHandler(gwmux, conn); err != nil {
+		logger.L().Error().Err(err).Msgf("Failed to register handler", "err", err)
+		return nil, err
+	}
+	return &GRPCGatewayServer{
+		srv: &http.Server{
+			Addr:    httpOptions.Addr,
+			Handler: gwmux,
+		},
+	}, nil
 }
 
 // RunOrDie 启动 GRPC 网关服务器并在出错时记录致命错误.
