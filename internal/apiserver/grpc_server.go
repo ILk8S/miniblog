@@ -5,6 +5,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	handler "github.com/wshadm/miniblog/internal/apiserver/handler/grpc"
+	mw "github.com/wshadm/miniblog/internal/pkg/middleware/grpc"
 	"github.com/wshadm/miniblog/internal/pkg/server"
 	apiv1 "github.com/wshadm/miniblog/pkg/api/apiserver/v1"
 	"google.golang.org/grpc"
@@ -23,10 +24,22 @@ var _ server.Server = (*grpcServer)(nil)
 // NewGRPCServerOr 创建并初始化 gRPC 或者 gRPC +  gRPC-Gateway 服务器.
 // 一般函数命名中有Or，表示“或者”的含义，暗示该函数有多种选择
 func (c *ServerConfig) NewGRPCServerOr() (server.Server, error) {
+	//配置gRPC服务器选项，包括拦截器链
+	serverOptions := []grpc.ServerOption{
+		//注意拦截器顺序
+		grpc.ChainUnaryInterceptor(
+			//请求ID拦截器
+			mw.RequestIDInterceptor(),
+		),
+	}
 	//创建grpc服务器
-	grpcsrv, err := server.NewGRPCServer(c.cfg.GRPCOptions, func(s grpc.ServiceRegistrar) {
-		apiv1.RegisterMiniBlogServer(s, handler.NewHandler())
-	})
+	grpcsrv, err := server.NewGRPCServer(
+		c.cfg.GRPCOptions,
+		serverOptions,
+		func(s grpc.ServiceRegistrar) {
+			apiv1.RegisterMiniBlogServer(s, handler.NewHandler())
+		})
+
 	if err != nil {
 		return nil, err
 	}

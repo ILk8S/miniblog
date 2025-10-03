@@ -18,13 +18,16 @@ type GRPCServer struct {
 	lis net.Listener
 }
 
-func NewGRPCServer(grpcOptions *options.GRPCOptions, registerServer func(grpc.ServiceRegistrar)) (*GRPCServer, error) {
+func NewGRPCServer(
+	grpcOptions *options.GRPCOptions,
+	serverOptions []grpc.ServerOption,
+	registerServer func(grpc.ServiceRegistrar)) (*GRPCServer, error) {
 	lis, err := net.Listen("tcp", grpcOptions.Addr)
 	if err != nil {
 		logger.L().Error().Msgf("Failed to listen", "err", err)
 		return nil, err
 	}
-	grpcsrv := grpc.NewServer()
+	grpcsrv := grpc.NewServer(serverOptions...)
 	registerServer(grpcsrv)
 	registerHealthServer(grpcsrv)
 	reflection.Register(grpcsrv)
