@@ -1,17 +1,9 @@
 package http
 
-import (
-	"time"
+// Handler 处理博客模块的请求
+type Handler struct{}
 
-	"github.com/gin-gonic/gin"
-	apiv1 "github.com/wshadm/miniblog/pkg/api/apiserver/v1"
-)
-
-//Healthz服务健康检查
-func (h *Handler) Healthz(c *gin.Context) {
-	//返回Json响应
-	c.JSON(200, &apiv1.HealthResponse{
-		Status: apiv1.ServiceStatus_Healthy,
-		Timestamp: time.Now().Format(time.DateTime),
-	})
+// NewHandler创建新的Handler示例
+func NewHandler() *Handler {
+	return &Handler{}
 }

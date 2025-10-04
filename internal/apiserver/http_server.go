@@ -7,6 +7,7 @@ import (
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	handler "github.com/wshadm/miniblog/internal/apiserver/handler/http"
+	mw "github.com/wshadm/miniblog/internal/pkg/middleware/gin"
 	"github.com/wshadm/miniblog/internal/pkg/server"
 )
 
@@ -21,6 +22,8 @@ var _ server.Server = (*ginServer)(nil)
 func (c *ServerConfig) NewGinServer() *ginServer {
 	//创建Gin引擎
 	engine := gin.New()
+	//注册全局中间件，用于回复panic、设置HTTP头、添加请求ID等
+	engine.Use(gin.Recovery(), mw.Cors, mw.NoCache, mw.Secure, mw.RequestIDMiddleware())
 	//注册RESTAPI 路由
 	c.InstallRESTAPI(engine)
 	httpsrv := server.NewHTTPServer(c.cfg.HTTPOptions, engine)
