@@ -250,6 +250,7 @@ github.com/munnerz/goautoneg
 github.com/onexstack/onexstack/pkg/db
 github.com/onexstack/onexstack/pkg/id
 github.com/onexstack/onexstack/pkg/log
+github.com/onexstack/onexstack/pkg/store/where
 github.com/onexstack/onexstack/pkg/util/strings
 # github.com/pelletier/go-toml/v2 v2.2.3
 ## explicit; go 1.21.0

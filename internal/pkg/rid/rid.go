@@ -1,8 +1,6 @@
 package rid
 
 import (
-	"strings"
-
 	"github.com/onexstack/onexstack/pkg/id"
 )
 
@@ -17,13 +15,13 @@ const (
 	PostID ResourceID = "post"
 )
 
-//String 将资源标识符转换成字符串
+// String 将资源标识符转换成字符串
 func (rid ResourceID) String() string {
 	return string(rid)
 }
 
-//New创建带前缀的唯一标识符
-func (rid ResourceID) New(conter unit64) string {
+// New创建带前缀的唯一标识符
+func (rid ResourceID) New(conter uint64) string {
 	//使用自定义选项生成唯一标识符
 	uniqueStr := id.NewCode(conter, id.WithCodeChars([]rune(defaultABC)), id.WithCodeL(6), id.WithCodeSalt(Salt()))
 	return rid.String() + "-" + uniqueStr
