@@ -57,7 +57,8 @@ func (s *userStore) Update(ctx context.Context, obj *model.UserM) error {
 
 // Delete 根据条件删除用户记录.
 func (s *userStore) Delete(ctx context.Context, opts *where.Options) error {
-	if err := s.store.DB(ctx, opts).Delete(new(model.UserM)).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := s.store.DB(ctx, opts).Delete(new(model.UserM)).Error; err != nil && !errors.Is(
+		err, gorm.ErrRecordNotFound) {
 		log.Errorw("Failed to delete user from database", "err", err, "conditions", opts)
 		return err
 	}
@@ -72,6 +73,7 @@ func (s *userStore) Get(ctx context.Context, opts *where.Options) (*model.UserM,
 	}
 	return &obj, nil
 }
+
 func (s *userStore) List(ctx context.Context, opts *where.Options) (count int64, ret []*model.UserM, err error) {
 	err = s.store.DB(ctx, opts).Order("id desc").Find(&ret).Offset(-1).Limit(-1).Count(&count).Error
 	if err != nil {

@@ -1,8 +1,6 @@
 package store
 
 import (
-	"strings"
-
 	"github.com/wshadm/miniblog/internal/pkg/log"
 )
 
